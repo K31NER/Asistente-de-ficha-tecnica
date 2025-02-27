@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tecnomack - Productos Tecnológicos</title>
+    <link rel="icon" href="static/img/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link>
+    <style>
+            /* Estilos generales */
+            body {
+                background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+                color: #ffffff;
+                font-family: 'Roboto', sans-serif;
+                margin: 0;
+                overflow-x: hidden;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            /* Encabezado */
+            header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-bottom: 20px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            header .logo-container {
+                display: flex;
+                align-items: center;
+                gap: 15px; /* Espacio entre logo y título */
+            }
+            header img {
+                width: 50px; /* Tamaño del logo circular */
+                height: 50px;
+                border-radius: 50%; /* Hace la imagen circular */
+                object-fit: cover; /* Ajusta la imagen al círculo */
+                border: 2px solid #00ffff; /* Borde cyan para destacar */
+            }
+            header h1 {
+                font-size: 2.5em;
+                margin: 0;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+            }
+            .product-content {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                padding: 10px;
+                background: rgba(0,0,0,0.7);
+                transform: translateY(100%);
+                transition: transform 0.3s ease;
+            }
+            .product:hover .product-content {
+                transform: translateY(0);
+            }
+            nav ul {
+                list-style: none;
+                display: flex;
+                padding: 0;
+            }
+            nav ul li {
+                margin-right: 30px;
+            }
+            nav ul li a {
+                color: #ffffff;
+                text-decoration: none;
+                font-size: 1.1em;
+                transition: color 0.3s ease;
+            }
+            nav ul li a:hover {
+                color: #00ffff;
+            }
+            /* Secciones de categorías */
+            section {
+                margin-top: 60px;
+            }
+            section h2 {
+                font-size: 2em;
+                margin-bottom: 30px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            /* Lista de productos */
+            .product-list {
+                display: flex;
+                overflow-x: auto;
+                gap: 20px;
+                padding-bottom: 10px;
+                scroll-behavior: smooth;
+            }
+            .product-list::-webkit-scrollbar {
+                height: 6px;
+            }
+            .product-list::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 3px;
+            }
+            .product {
+                width: 200px;
+                height: 200px; /* Altura fija */
+                text-align: center;
+                flex-shrink: 0;
+                position: relative;
+                overflow: hidden;
+                border-radius: 10px;
+                transition: transform 0.3s ease;
+            }
+            .product img {
+                width: 100%;
+                height: 100%; /* Usar todo el espacio del contenedor */
+                object-fit: cover; /* Ajuste inteligente */
+                border-radius: 10px;
+            }
+            .product p {
+                margin: 0;
+                padding: 10px;
+                font-size: 1em;
+                opacity: 0;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                text-align: center;
+                background: rgba(0, 0, 0, 0.7);
+                transform: none;
+                line-height: 1.4;
+                box-sizing: border-box;
+            }
+            .product:hover {
+                transform: scale(1.05);
+            }
+            .product:hover p {
+                opacity: 1;
+            }
+            /* Efecto overlay */
+            .product::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.8));
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            .product:hover::before {
+                opacity: 1;
+            }
+            /* Animación de entrada */
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            section {
+                animation: fadeInUp 0.8s ease-out;
+            }
+            /* Responsividad */
+            @media (max-width: 600px) {
+                header {
+                    flex-direction: column;
+                    text-align: center;
+                }
+                nav ul {
+                    margin-top: 10px;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+                nav ul li {
+                    margin: 0 10px 10px;
+                }
+                .product {
+                    width: 150px;
+                    height: 150px; /* Altura ajustada */
+                }
+            }
+
+            .product-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .modal-content {
+            background: #1a1a2e;
+            border-radius: 15px;
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            gap: 25px;
+            padding: 30px;
+            position: relative;
+            animation: modalFade 0.3s ease;
+        }
+        
+        @keyframes modalFade {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 24px;
+            color: #00ffff;
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+        
+        .modal-image {
+            flex: 1;
+            max-width: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .modal-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .modal-info {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 15px;
+            }
+
+        .modal-info h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.8em;
+            color: #00ffff;
+            position: sticky;
+            top: 0;
+            background: #1a1a2e;
+            padding-bottom: 10px;
+        }
+
+        .modal-info p {
+            line-height: 1.6;
+            margin: 0;
+            font-size: 0.95em;
+            color: #ffffffcc;
+        }
+
+        
+        .pdf-btn {
+            background: #00ffff;
+            color: #0f0c29;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.3s ease;
+            width: fit-content;
+            margin-top: 20px;
+            align-self: flex-start;
+        }
+        
+        .pdf-btn i {
+            font-size: 1.2em;
+        }
+        
+        .pdf-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .modal-content {
+                flex-direction: column;
+                padding: 20px;
+            }
+            .modal-image {
+                max-width: 100%;
+            }
+            .modal-info h3 {
+                font-size: 1.5em;
+            }
+        }
+        
+        .product {
+            cursor: pointer;
+        }
+
+        .search-btn {
+        background: #00ffff;
+        border: none;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0f0c29;
+    }
+    
+    .search-btn:hover {
+        transform: scale(1.1) rotate(10deg);
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    }
+    
+    .search-btn:active {
+        transform: scale(0.9);
+    }
+    
+    .search-btn i {
+        font-size: 1.2em;
+        transition: transform 0.3s ease;
+    }
+    
+    /* Animación al hacer clic */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+    
+    .search-btn.active {
+        animation: pulse 0.4s ease;
+    }
+    
+    /* Responsive */
+    @media (max-width: 600px) {
+        .search-bar input {
+            max-width: none;
+            width: 100%;
+        }
+        .search-btn {
+            width: 40px;
+            height: 40px;
+        }
+    }
+
+    .header-btn {
+        background: #00ffff;
+        color: #0f0c29;
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        align-items: center;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .header-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+    }
+    
+    .header-btn:active {
+        transform: scale(0.95);
+    }
+    
+    .header-btn i {
+        font-size: 0.9em;
+    }
+    
+    /* Animación unificada */
+    @keyframes buttonPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    .header-btn.clicked {
+        animation: buttonPulse 0.4s ease;
+    }
+    
+    /* Adaptar enlaces del nav como botones */
+    nav ul li a {
+        padding: 8px 15px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    nav ul li a:hover {
+        background: rgba(0, 255, 255, 0.1);
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            flex-direction: column;
+            gap: 15px;
+        }
+        .header-btn span {
+            display: none;
+        }
+    }
+
+    /* Animaciones suaves */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    section {
+        opacity: 1;
+        transform: translateY(0);
+        transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .section-highlight {
+        animation: sectionFocus 1.2s ease;
+    }
+    
+    @keyframes sectionFocus {
+        0% {
+            transform: translateY(20px);
+            opacity: 0.4;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* Slider Container */
+    .slider-container {
+        position: relative;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 60px;
+    }
+
+    /* Lista de Productos */
+    .product-list {
+        display: flex;
+        gap: 25px;
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+        padding: 20px 0;
+        justify-content: center;
+    }
+
+    /* Botones del Slider */
+    .slider-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #00ffff;
+        color: #0f0c29;
+        border: none;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+        z-index: 2;
+    }
+
+    .slider-btn:hover {
+        transform: translateY(-50%) scale(1.15);
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+    }
+
+    .slider-btn:active {
+        transform: translateY(-50%) scale(0.9);
+    }
+
+    .slider-btn.prev {
+        left: 10px;
+    }
+
+    .slider-btn.next {
+        right: 10px;
+    }
+
+    .slider-btn i {
+        font-size: 1.4em;
+        transition: transform 0.3s ease;
+    }
+
+    /* Productos */
+    .product {
+        flex: 0 0 calc(33.33% - 20px);
+        max-width: calc(33.33% - 20px);
+        height: 350px;
+        border-radius: 15px;
+        overflow: hidden;
+        position: relative;
+        transition: transform 0.3s ease;
+    }
+
+    .product:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .product {
+            flex: 0 0 calc(50% - 15px);
+            max-width: calc(50% - 15px);
+            height: 300px;
+        }
+        
+        .slider-container {
+            padding: 0 40px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .product {
+            flex: 0 0 100%;
+            max-width: 100%;
+            height: 250px;
+        }
+        
+        .slider-btn {
+            width: 40px;
+            height: 40px;
+        }
+    }
+
+    /* Animación al hacer clic (igual que botones anteriores) */
+    @keyframes buttonPulse {
+        0% { transform: translateY(-50%) scale(1); }
+        50% { transform: translateY(-50%) scale(1.2); }
+        100% { transform: translateY(-50%) scale(1); }
+    }
+
+    .slider-btn.clicked {
+        animation: buttonPulse 0.4s ease;
+    }
+
+    .product-list {
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 50px;
+}
+
+.product {
+    scroll-snap-align: start;
+}
+
+.slider-container:hover .slider-btn {
+    opacity: 1;
+}
+
+/* Efecto de scroll infinito */
+@keyframes slideLoop {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+.product-list:hover {
+    animation-play-state: paused;
+}
+
+/* Estilos para la rueda de progreso */
+.progress-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.progress-ring__progress {
+    transition: stroke-dashoffset 0.3s ease;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}
+
+.progress-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #00ffff;
+    border: none;
+    color: #0f0c29;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.progress-button:hover {
+    background: #00ffff;
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+}
+
+.progress-button i {
+    font-size: 1.2em;
+}
+
+@media (max-width: 768px) {
+    .progress-container {
+        bottom: 20px;
+        right: 20px;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Encabezado -->
+        <header>
+            <div class="logo-container">
+                <img src="{{ url_for('static', path='/img/logo.png') }}" alt="Logo">
+                <h1>Tecnomack</h1>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <nav>
+                    <ul>
+                        <li><a href="#smartphones">Smartphones</a></li>
+                        <li><a href="#laptops">Laptops</a></li>
+                        <li><a href="#accesorios">Accesorios</a></li>
+                        <!-- Asegúrate que la ruta comience con /static -->
+                        <!-- En tus templates HTML -->
+                    </ul>
+                </nav>
+                <a href="/form" class="header-btn"><i class="fa-solid fa-plus"></i>Agregar Productos</a>
+            </div>
+        </header>
+        <div class="search-bar" style="margin: 20px 0;">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="text" placeholder="Buscar productos..." 
+                       id="searchInput"
+                       style="padding: 10px 20px; border-radius: 30px; border: none; flex-grow: 1; max-width: 400px;">
+                <button class="search-btn" id="searchButton">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Contenido principal -->
+        <main>
+        
+    {% for categoria, productos in productos_por_categoria.items() %}
+    <section id="{{ categoria }}" class="category-section">
+        <h2>{{ categoria|title }}</h2>
+        <div class="product-list">
+            {% for producto in productos %}
+            <div class="product">
+                <img src="{{ producto.imagen_url }}" alt="{{ producto.nombre }}">
+                <h3>{{ producto.nombre }}</h3>
+                <p class="price">${{ producto.precio }}</p>
+                <p class="description">{{ producto.descripcion }}</p>
+                <a href="{{ producto.ficha_url }}" target="_blank" class="btn">
+                    Ficha Técnica
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endfor %}
+        </main>
+    </div>
+
+    <footer style="background: rgba(0,0,0,0.2); padding: 40px 0; margin-top: 60px;">
+        <div class="container">
+          <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 250px; margin: 20px;">
+              <h3>Contacto</h3>
+              <p>Email: info@tecnomack.com<br>Tel: +57 318 4949887</p>
+            </div>
+            <div style="flex: 1; min-width: 250px; margin: 20px;">
+              <h3>Redes Sociales</h3>
+              <a href="#" style="color: #00ffff; text-decoration: none;">
+                <i class="fa-brands fa-instagram"></i>Instagram</a><br>
+              <a href="#" style="color: #00ffff; text-decoration: none;">
+                <i class="fa-brands fa-facebook-f"></i></i>Facebook</a>
+            </div>
+          </div>
+        </div>
+        
+        
+
+        <div class="product-modal" id="productModal">
+            <div class="modal-content">
+                <span class="modal-close">×</span>
+                <div class="modal-image">
+                    <img id="modalImage" src="" alt="Producto">
+                </div>
+                <div class="modal-info">
+                    <h3 id="modalTitle"></h3>
+                    <p id="modalDescription"></p>
+                    <a id="pdfLink" class="pdf-btn" href="#" target="_blank">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        Descargar Ficha Técnica
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <div class="progress-container">
+        <svg class="progress-ring" width="60" height="60">
+            <circle class="progress-ring__circle" stroke="#00ffff33" stroke-width="4" fill="transparent" r="24" cx="30" cy="30"/>
+            <circle class="progress-ring__progress" stroke="#00ffff" stroke-width="4" fill="transparent" r="24" cx="30" cy="30" stroke-dasharray="150.8" stroke-dashoffset="150.8"/>
+        </svg>
+        <button class="progress-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+            <i class="fa-solid fa-arrow-up"></i>
+        </button>
+    </div>
+    <!-- JavaScript -->
+    <script>
+        console.log("TechFlix cargado correctamente");
+
+        // Configuración del modal
+        const modal = document.getElementById('productModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalImage = document.getElementById('modalImage');
+        const modalDescription = document.getElementById('modalDescription');
+        const pdfLink = document.getElementById('pdfLink');
+        const closeModal = document.querySelector('.modal-close');
+
+        // Abrir modal al hacer clic en producto
+        document.querySelectorAll('.product').forEach(product => {
+            product.addEventListener('click', () => {
+                const nombre = product.querySelector('p').textContent;
+                const imagen = product.querySelector('img').src;
+                
+                modal.style.display = 'flex';
+                modalTitle.textContent = nombre;
+                modalImage.src = imagen;
+                modalDescription.textContent = productos[nombre]?.descripcion || "Descripción no disponible";
+                pdfLink.href = productos[nombre]?.pdf || "#";
+            });
+        });
+
+        // Cerrar modal
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Animación del botón de búsqueda
+    const searchButton = document.getElementById('searchButton');
+    
+    searchButton.addEventListener('click', () => {
+        // Añadir clase de animación
+        searchButton.classList.add('active');
+        
+        // Eliminar clase después de la animación
+        setTimeout(() => {
+            searchButton.classList.remove('active');
+        }, 400);
+        
+        // Aquí puedes añadir la lógica de búsqueda
+        const searchTerm = document.getElementById('searchInput').value;
+        console.log('Buscando:', searchTerm);
+    });
+
+
+     // Navegación suave mejorada
+    document.querySelectorAll('nav a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetSection = document.querySelector(targetId);
+            
+            // Remover highlight anterior
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.remove('section-highlight');
+            });
+            
+            // Añadir animación a la sección objetivo
+            targetSection.classList.add('section-highlight');
+            
+            // Scroll suave con offset para el header
+            const yOffset = -80; // Ajusta según el tamaño de tu header
+            const y = targetSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            
+            window.scrollTo({
+                top: y,
+                behavior: 'smooth'
+            });
+            
+            // Actualizar historia
+            window.history.pushState(null, null, targetId);
+        });
+    });
+
+    // Detectar scroll para resaltar secciones
+    window.addEventListener('scroll', () => {
+        document.querySelectorAll('section').forEach(section => {
+            const rect = section.getBoundingClientRect();
+            if(rect.top <= 100 && rect.bottom >= 100) {
+                section.classList.add('section-highlight');
+            }
+        });
+    });
+
+    document.querySelectorAll('.slider-container').forEach(container => {
+    const list = container.querySelector('.product-list');
+    const products = list.querySelectorAll('.product');
+    const productWidth = products[0].offsetWidth + 25;
+    
+    // Clonar productos correctamente
+    const cloneQty = 3; // Número de productos a clonar
+    const clonesStart = Array.from(products).slice(-cloneQty).map(node => node.cloneNode(true));
+    const clonesEnd = Array.from(products).slice(0, cloneQty).map(node => node.cloneNode(true));
+    
+    list.prepend(...clonesStart);
+    list.append(...clonesEnd);
+    
+    let isAnimating = false;
+    let currentPosition = productWidth * cloneQty;
+    
+    // Inicializar posición
+    list.scrollLeft = currentPosition;
+
+    function scrollSlider(direction) {
+        if(isAnimating) return;
+        isAnimating = true;
+        
+        // Animación del botón
+        const button = direction === 1 ? container.querySelector('.next') : container.querySelector('.prev');
+        button.classList.add('clicked');
+        setTimeout(() => button.classList.remove('clicked'), 400);
+        
+        // Calcular nuevo desplazamiento
+        currentPosition += (productWidth * 3 * direction);
+        list.scrollTo({
+            left: currentPosition,
+            behavior: 'smooth'
+        });
+        
+        // Verificar reposicionamiento después de la animación
+        setTimeout(() => {
+            const maxScroll = list.scrollWidth - list.clientWidth;
+            
+            if(currentPosition <= productWidth * cloneQty) {
+                currentPosition = maxScroll - productWidth * cloneQty * 2;
+                list.scrollLeft = currentPosition;
+            }
+            
+            if(currentPosition >= maxScroll - productWidth * cloneQty) {
+                currentPosition = productWidth * cloneQty;
+                list.scrollLeft = currentPosition;
+            }
+            
+            isAnimating = false;
+        }, 500);
+    }
+
+    // Event listeners mejorados
+    container.querySelector('.prev').addEventListener('click', () => scrollSlider(-1));
+    container.querySelector('.next').addEventListener('click', () => scrollSlider(1));
+});
+
+    // JavaScript para el progreso de scroll
+    const progressRing = document.querySelector('.progress-ring__progress');
+    const radius = progressRing.r.baseVal.value;
+    const circumference = 2 * Math.PI * radius;
+    const progressButton = document.querySelector('.progress-button');
+
+    progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
+    progressRing.style.strokeDashoffset = circumference;
+
+    function updateProgress() {
+        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = (window.scrollY / scrollHeight);
+        const offset = circumference - (scrollPercent * circumference);
+    
+        progressRing.style.strokeDashoffset = offset;
+    
+        if (scrollPercent >= 0.95) {
+            progressButton.style.display = 'flex';
+            progressRing.style.display = 'none';
+        } else {
+            progressButton.style.display = 'none';
+            progressRing.style.display = 'block';
+        }
+    }
+
+    window.addEventListener('scroll', updateProgress);
+    updateProgress(); // Inicializar al cargar
+
+    
+</script>
+</body>
+</html>
