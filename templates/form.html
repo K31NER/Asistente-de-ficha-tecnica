@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Página con Formulario</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="icon" href="static/img/logo.png">
+    <style>
+/* Estilos generales */
+body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: transparent;
+        }
+
+        header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-bottom: 20px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            header h1 {
+                font-size: 2.5em;
+                margin: 0;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+            }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            padding: 0;
+        }
+
+        nav ul li {
+            margin-right: 30px;
+        }
+
+        nav ul li a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: #00ffff;
+        }
+
+        section {
+            margin-top: 60px;
+            background: transparent;
+        }
+
+        section h2 {
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .product-list {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding-bottom: 10px;
+            scroll-behavior: smooth;
+            background: transparent;
+        }
+
+        .product-list::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .product-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .product {
+            width: 200px;
+            height: 200px;
+            text-align: center;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+            background: transparent;
+        }
+
+        .product img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .product p {
+            margin-top: 10px;
+            font-size: 1em;
+            opacity: 0;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: opacity 0.3s ease;
+        }
+
+        .product:hover {
+            transform: scale(1.05);
+        }
+
+        .product:hover p {
+            opacity: 1;
+        }
+
+        .product::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.8));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .product:hover::before {
+            opacity: 1;
+        }
+
+        .product-form {
+            background: transparent;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 5px;
+            color: #ffffff;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input[type="file"] {
+            padding: 0;
+            background: transparent;
+            color: #ffffff;
+        }
+
+        .form-group input[type="file"]::-webkit-file-upload-button {
+            background: linear-gradient(45deg, #00ffff, #00cccc);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: #0f0c29;
+            font-size: 1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .form-group input[type="file"]::-webkit-file-upload-button:hover {
+            transform: scale(1.05);
+        }
+
+        .form-group select {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #ffffff;
+        }
+
+        .form-group select option {
+            background: #302b63;
+            color: #ffffff;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #00ffff, #00cccc);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            color: #0f0c29;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Estilo para la previsualización de la imagen */
+        .image-preview {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        section {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                margin-top: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 0 10px 10px;
+            }
+
+            .product {
+                width: 150px;
+                height: 150px;
+            }
+
+            .product-form {
+                padding: 20px;
+            }
+
+            .submit-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Tecnomack</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Inicio</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="container">
+        <h2>Agregar Producto</h2>
+        <form action="/formulario" method="post" enctype="multipart/form-data" class="product-form">
+            <div class="form-group">
+                <label for="nombre">Nombre del Producto</label>
+                <input type="text" id="nombre" name="nombre" required placeholder="Ingrese el nombre del producto">
+            </div>
+
+            <div class="form-group">
+              <label for="precio">Precio</label>
+              <input type="text" id="precio" name="precio" required placeholder="Ingrese el precio del producto">
+          </div>
+
+          <div class="form-group">
+            <label for="imagen">Imagen del Producto</label>
+            <input type="file" id="imagen" name="imagen" accept="image/*" required onchange="previewImage(event)">
+            <div class="image-preview" id="imagePreview"></div>
+        </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" name="descripcion" required placeholder="Describa el producto"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="categoria">Categoría</label>
+                <select id="categoria" name="categoria" required>
+                    <option value="">Seleccione una categoría</option>
+                    <option value="electronica">Electrónica</option>
+                    <option value="Computo">Computo</option>
+                    <option value="Robotica">Robótica</option>
+                    <option value="Domotica">Domótica</option>
+                    <option value="Smart">Smart</option>
+                    <option value="Audio y Vision">Audio y Vision</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ficha_tecnica">Ficha Técnica (PDF)</label>
+                <input type="file" id="ficha_tecnica" name="ficha_tecnica" accept=".pdf">
+            </div>
+
+            <button type="submit" class="submit-btn" href="/">Agregar Producto</button>
+        </form>
+    </section>
+
+    <script>
+      function previewImage(event) {
+          const file = event.target.files[0];
+          const previewContainer = document.getElementById('imagePreview');
+          previewContainer.innerHTML = ''; // Limpiar cualquier vista previa anterior
+
+          if (file) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                  const img = document.createElement('img');
+                  img.src = e.target.result;
+                  previewContainer.appendChild(img);
+              };
+              reader.readAsDataURL(file);
+          }
+      }
+  </script>
+</body>
+</html>
