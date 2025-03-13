@@ -60,6 +60,9 @@ async def inicio(request: Request):
 def formulario(request:Request):
     return templates.TemplateResponse("form.html",{"request":request})
 
+@app.get("/chat",response_class=HTMLResponse,tags=["Renderizado"])
+def formulario(request:Request):
+    return templates.TemplateResponse("chatbot.html",{"request":request})
 #Creamos los endpoints de funcionalidades
 @app.post("/formulario",tags=["Funcionalidades"])
 async def formulario(request:Request,

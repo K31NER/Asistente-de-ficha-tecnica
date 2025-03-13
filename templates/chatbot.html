@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        a{
+            text-decoration: none;
+            color: #fff;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #2c2c54, #1e1e40);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-decoration: none;
+        }
+        .chat-container {
+            width: 90%;
+            max-width: 900px;
+            height: 90%;
+            max-height: 700px;
+            background: #23234a;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .back-button {
+            position: absolute;
+            left: 10px;
+            cursor: pointer;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+        .logo img {
+            width: 50px;
+            margin-right: 10px;
+        }
+        .messages {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 100%;
+            overflow-y: auto;
+            padding: 10px;
+            border-radius: 5px;
+            background: #1a1a3a;
+        }
+        .message {
+            display: flex;
+            align-items: center;
+            background: #3b3b6d;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 80%;
+            position: relative;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeIn 0.3s forwards;
+        }
+        .message img {
+            width: 30px;
+            margin-right: 10px;
+        }
+        .user-message {
+            align-self: flex-end;
+            background: #5a5a8e;
+        }
+        .message span {
+            flex-grow: 1;
+        }
+        .timestamp {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-left: 10px;
+        }
+        .input-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            background: #1a1a3a;
+            padding: 8px;
+            border-radius: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background: none;
+            color: white;
+            outline: none;
+        }
+        .send-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+            margin-left: 10px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        label.upload-button {
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .sidebar {
+            position: fixed;
+            left: -300px; /* Inicialmente oculto */
+            top: 0;
+            width: 300px;
+            height: 100%;
+            background: #1a1a3a;
+            border-radius: 0 10px 10px 0;
+            transition: left 0.3s ease;
+            padding: 20px;
+            box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            visibility: hidden; /* Oculto inicialmente */
+        }
+        .sidebar.open {
+            left: 0; /* Se despliega */
+            visibility: visible; /* Visible cuando está abierto */
+        }
+        .sidebar-toggle {
+            position: fixed;
+            left: 10px;
+            top: 20px;
+            background: #3b3b6d;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-toggle.hidden {
+            opacity: 0; /* Oculta el botón */
+            pointer-events: none; /* Desactiva interacciones */
+        }
+        .sidebar-close {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .sidebar-header img {
+            width: 50px;
+            margin-right: 10px;
+        }
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+        .sidebar-footer {
+            position: absolute;
+            bottom: 60px; /* Ajustado para subir el botón */
+            left: 20px;
+            right: 20px;
+        }
+        .sidebar-footer button {
+            width: 100%;
+            padding: 15px;
+            background: #3b3b6d;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+        .sidebar-footer button:hover {
+            background: #5a5a8e;
+        }
+        .sidebar-footer button .material-icons {
+            margin-right: 10px;
+        }
+        .chat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            height: calc(100% - 150px); /* Ajuste para el espacio del header y footer */
+        }
+        .chat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #3b3b6d;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .chat-item:hover {
+            background: #5a5a8e;
+        }
+        .chat-item .delete-btn {
+            color: red;
+            cursor: pointer;
+        }
+        .add-chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #3b3b6d;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            transition: transform 0.3s ease;
+        }
+        .add-chat-button:hover {
+            transform: scale(1.1);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @media (max-width: 768px) {
+            .chat-container {
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+            }
+            .sidebar {
+                width: 250px;
+            }
+            .sidebar-footer button {
+                font-size: 14px;
+            }
+        }
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 200px;
+            }
+            .sidebar-header h2 {
+                font-size: 18px;
+            }
+            .sidebar-footer button {
+                font-size: 12px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="header">
+            <span class="material-icons back-button"><a href="/">arrow_back</a></span>
+            <div class="logo">
+                <h2>Hola, ¿necesitas ayuda?</h2>
+            </div>
+        </div>
+        <div class="messages" id="chat"></div>
+        <div class="input-container">
+            <input type="text" id="messageInput" placeholder="Escribe un mensaje..." onkeypress="handleKeyPress(event)">
+            <label class="upload-button material-icons" for="fileInput">attach_file</label>
+            <input type="file" id="fileInput" accept="image/*,application/pdf">
+            <button class="send-button material-icons" onclick="sendMessage()">send</button>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <button class="sidebar-close material-icons" onclick="toggleSidebar()">close</button>
+        <div class="sidebar-header">
+            <img src="static/img/logo.png" alt="Logo">
+            <h2>TECNOMACK</h2>
+        </div>
+        <div class="chat-list" id="chatList">
+            <!-- Aquí se mostrarán los chats almacenados -->
+        </div>
+        <div class="sidebar-footer">
+            <button onclick="toggleSidebar()">
+                <span class="material-icons">arrow_back</span>
+                Volver
+            </button>
+        </div>
+    </div>
+    <button class="sidebar-toggle material-icons" id="sidebarToggle" onclick="toggleSidebar()">menu</button>
+
+    <!-- Botón de Añadir Nuevo Chat -->
+    <button class="add-chat-button material-icons" onclick="addNewChat()">add</button>
+
+    <script>
+        let chats = [];
+        let currentChat = null;
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const fileInput = document.getElementById('fileInput');
+            const chat = document.getElementById('chat');
+
+            if (input.value.trim() !== '') {
+                createMessage(input.value, 'user');
+                input.value = '';
+            }
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                createMessage(`<a href="${URL.createObjectURL(file)}" target="_blank">${file.name}</a>`, 'user');
+                fileInput.value = '';
+            }
+        }
+
+        function createMessage(content, sender) {
+            const chat = document.getElementById('chat');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+
+            const timestamp = document.createElement('span');
+            timestamp.classList.add('timestamp');
+            timestamp.textContent = new Date().toLocaleTimeString();
+
+            // Ícono de usuario o bot
+            const icon = document.createElement('span');
+            icon.classList.add('material-icons');
+            icon.textContent = sender === 'user' ? 'person' : 'android'; // Ícono de usuario o bot
+            icon.style.marginRight = '10px'; // Espacio entre el ícono y el mensaje
+
+            messageDiv.appendChild(icon); // Agregar el ícono al mensaje
+            messageDiv.innerHTML += `<span>${content}</span>`; // Agregar el contenido del mensaje
+            messageDiv.appendChild(timestamp);
+
+            chat.appendChild(messageDiv);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function addNewChat() {
+            const chat = document.getElementById('chat');
+            chat.innerHTML = ''; // Limpiar el chat actual
+
+            // Crear un nuevo chat con un título único
+            const chatTitle = `Chat ${chats.length + 1}`;
+            const chatData = {
+                title: chatTitle,
+                timestamp: new Date().toLocaleString()
+            };
+            chats.push(chatData);
+            updateChatList(); // Actualizar la lista de chats en el sidebar
+
+            currentChat = chatTitle; // Establecer el chat actual
+            alert(`Nuevo chat iniciado: ${chatTitle}`);
+        }
+
+        function updateChatList() {
+            const chatList = document.getElementById('chatList');
+            chatList.innerHTML = ''; // Limpiar la lista actual
+
+            chats.forEach((chat, index) => {
+                const chatItem = document.createElement('div');
+                chatItem.classList.add('chat-item');
+                chatItem.innerHTML = `
+                    <span>${chat.title} - ${chat.timestamp}</span>
+                    <span class="material-icons delete-btn" onclick="deleteChat(${index})">delete</span>
+                `;
+                chatList.appendChild(chatItem);
+            });
+        }
+
+        function deleteChat(index) {
+            chats.splice(index, 1); // Eliminar el chat del array
+            updateChatList(); // Actualizar la lista de chats en el sidebar
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            sidebar.classList.toggle('open');
+            sidebarToggle.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>

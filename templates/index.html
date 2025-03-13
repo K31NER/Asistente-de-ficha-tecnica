@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tecnomack - Productos Tecnológicos</title>
     <link rel="icon" href="static/img/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link>
     <style>
-            /* Estilos generales */
-            body {
-                background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-                color: #ffffff;
-                font-family: 'Roboto', sans-serif;
-                margin: 0;
-                overflow-x: hidden;
-            }
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 20px;
-            }
-            /* Encabezado */
-            header {
+        /* Estilos generales */
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* Encabezado */
+        header {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -87,72 +87,96 @@
                 letter-spacing: 1px;
             }
             /* Lista de productos */
-            .product-list {
-                display: flex;
-                overflow-x: auto;
-                gap: 20px;
-                padding-bottom: 10px;
-                scroll-behavior: smooth;
-            }
-            .product-list::-webkit-scrollbar {
-                height: 6px;
-            }
-            .product-list::-webkit-scrollbar-thumb {
-                background: rgba(255, 255, 255, 0.2);
-                border-radius: 3px;
-            }
+
             .product {
-                width: 200px;
-                height: 200px; /* Altura fija */
-                text-align: center;
-                flex-shrink: 0;
                 position: relative;
+                width: 200px;
+                margin: 10px;
+                cursor: pointer;
+            }
+
+            .product-card {
+                position: relative;
+                height: 200px;
                 overflow: hidden;
                 border-radius: 10px;
                 transition: transform 0.3s ease;
             }
-            .product img {
-                width: 100%;
-                height: 100%; /* Usar todo el espacio del contenedor */
-                object-fit: cover; /* Ajuste inteligente */
+
+            .product-main-image {
+                width: 1000px;
+                height: 100%;
+                object-fit: cover;
                 border-radius: 10px;
             }
-            .product p {
-                margin: 0;
-                padding: 10px;
-                font-size: 1em;
-                opacity: 0;
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                text-align: center;
-                background: rgba(0, 0, 0, 0.7);
-                transform: none;
-                line-height: 1.4;
-                box-sizing: border-box;
+
+            .product-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px;
+            margin: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: #00ffff;
+            text-align: center;
             }
-            .product:hover {
-                transform: scale(1.05);
+
+            .product-detail-card {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 200px;
+            height: 200px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            border-radius: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2;
             }
-            .product:hover p {
-                opacity: 1;
+
+            .product:hover .product-detail-card {
+            left: calc(100% + 10px);
+            opacity: 1;
+            visibility: visible;
             }
-            /* Efecto overlay */
-            .product::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.8));
-                opacity: 0;
-                transition: opacity 0.3s ease;
+
+            .product-price {
+            color: #ffffff;
+            font-size: 1.4em;
+            margin: 0 0 10px 0;
+            font-weight: bold;
             }
-            .product:hover::before {
-                opacity: 1;
+
+            .product-description {
+            color: #ccc;
+            font-size: 0.95em;  /* Tamaño aumentado */
+            line-height: 1.5;
+            margin: 10px 0 15px 0;
+            flex-grow: 1;
+            overflow-y: auto;  /* Scroll si el texto es muy largo */
+            padding-right: 8px; /* Espacio para el scroll */
+            max-height: 120px; /* Altura máxima */
+            display: block; /* Asegurar visibilidad */
             }
+
+            .product-detail-btn {
+                display: inline-block;
+                padding: 8px 20px;
+                background: #00ffff;
+                color: #0f0c29;
+                text-decoration: none;
+                border-radius: 20px;
+                font-size: 0.9em;
+                transition: transform 0.3s ease;
+            }
+
+            .product-detail-btn:hover {
+                transform: translateY(-2px);
+            }
+
             /* Animación de entrada */
             @keyframes fadeInUp {
                 from {
@@ -470,47 +494,74 @@
     }
 
     /* Botones del Slider */
-    .slider-btn {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background: #00ffff;
-        color: #0f0c29;
-        border: none;
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
-        z-index: 2;
-    }
+    /* Slider Container */
+.slider-container {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 60px;
+}
 
-    .slider-btn:hover {
-        transform: translateY(-50%) scale(1.15);
-        box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
-    }
+/* Lista de Productos */
+.product-list {
+    display: flex;
+    gap: 25px;
+    overflow-x: hidden; /* Cambiamos de auto a hidden para controlarlo con JS */
+    scroll-behavior: smooth;
+    padding: 20px 0;
+    justify-content: flex-start; /* Alineamos a la izquierda */
+}
 
-    .slider-btn:active {
-        transform: translateY(-50%) scale(0.9);
-    }
+/* Botones del Slider */
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #00ffff;
+    color: #0f0c29;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+    z-index: 2;
+}
 
-    .slider-btn.prev {
-        left: 10px;
-    }
+.slider-btn:hover {
+    transform: translateY(-50%) scale(1.15);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+}
 
-    .slider-btn.next {
-        right: 10px;
-    }
+.slider-btn.prev {
+    left: 10px;
+}
 
-    .slider-btn i {
-        font-size: 1.4em;
-        transition: transform 0.3s ease;
-    }
+.slider-btn.next {
+    right: 10px;
+}
 
+/* Productos */
+.product {
+    flex: 0 0 200px; /* Ancho fijo para cada producto */
+    max-width: 200px;
+    height: 200px; /* Altura fija */
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.product img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que las imágenes se ajusten bien */
+    border-radius: 15px;
+}
     /* Productos */
     .product {
         flex: 0 0 calc(33.33% - 20px);
@@ -648,16 +699,8 @@
                 <h1>Tecnomack</h1>
             </div>
             <div style="display: flex; align-items: center; gap: 20px;">
-                <nav>
-                    <ul>
-                        <li><a href="#smartphones">Smartphones</a></li>
-                        <li><a href="#laptops">Laptops</a></li>
-                        <li><a href="#accesorios">Accesorios</a></li>
-                        <!-- Asegúrate que la ruta comience con /static -->
-                        <!-- En tus templates HTML -->
-                    </ul>
-                </nav>
-                <a href="/form" class="header-btn"><i class="fa-solid fa-plus"></i>Agregar Productos</a>
+                <a href="/chat" class="header-btn"><i class="fa-solid fa-robot"></i> Chatbot</a>
+                <a href="/form" class="header-btn"><i class="fa-solid fa-plus"></i> Agregar Productos</a>
             </div>
         </header>
         <div class="search-bar" style="margin: 20px 0;">
@@ -673,24 +716,33 @@
         <!-- Contenido principal -->
         <main>
         
-    {% for categoria, productos in productos_por_categoria.items() %}
-    <section id="{{ categoria }}" class="category-section">
-        <h2>{{ categoria|title }}</h2>
-        <div class="product-list">
-            {% for producto in productos %}
-            <div class="product">
-                <img src="{{ producto.imagen_url }}" alt="{{ producto.nombre }}">
-                <h3>{{ producto.nombre }}</h3>
-                <p class="price">${{ producto.precio }}</p>
-                <p class="description">{{ producto.descripcion }}</p>
-                <a href="{{ producto.ficha_url }}" target="_blank" class="btn">
-                    Ficha Técnica
-                </a>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-    {% endfor %}
+            {% for categoria, productos in productos_por_categoria.items() %}
+            <section id="{{ categoria }}" class="category-section">
+                <h2>{{ categoria|title }}</h2>
+                <div class="slider-container">
+                    <button class="slider-btn prev"><i class="fa-solid fa-chevron-left"></i></button>
+                    <div class="product-list">
+                        {% for producto in productos %}
+                        <div class="product">
+                            <div class="product-card">
+                                <img src="{{ producto.imagen_url }}" alt="{{ producto.nombre }}" class="product-main-image">
+                                <h3 class="product-name">{{ producto.nombre }}</h3>
+                            </div>
+                            <div class="product-detail-card">
+                                <p class="product-price">${{ producto.precio }}</p>
+                                <p class="product-description">{{ producto.descripcion }}</p>
+                                <a href="{{ producto.ficha_url }}" target="_blank" class="product-detail-btn" download>
+                                    <i class="fa-solid fa-file-pdf"></i> Ficha Técnica
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="slider-btn next"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </section>
+        {% endfor %}
+        
         </main>
     </div>
 
@@ -722,7 +774,7 @@
                 <div class="modal-info">
                     <h3 id="modalTitle"></h3>
                     <p id="modalDescription"></p>
-                    <a id="pdfLink" class="pdf-btn" href="#" target="_blank">
+                    <a id="pdfLink" class="pdf-btn" href="#" target="_blank" download>
                         <i class="fa-solid fa-file-pdf"></i>
                         Descargar Ficha Técnica
                     </a>
@@ -754,14 +806,16 @@
         // Abrir modal al hacer clic en producto
         document.querySelectorAll('.product').forEach(product => {
             product.addEventListener('click', () => {
-                const nombre = product.querySelector('p').textContent;
-                const imagen = product.querySelector('img').src;
+                const precio = product.querySelector('.product-price').textContent;
+                const imagen = product.querySelector('.product-main-image').src;
+                const descripcion = product.querySelector('.product-description').textContent;
+                const pdfUrl = product.querySelector('.product-detail-btn').href;
                 
                 modal.style.display = 'flex';
-                modalTitle.textContent = nombre;
+                modalTitle.textContent = precio;
                 modalImage.src = imagen;
-                modalDescription.textContent = productos[nombre]?.descripcion || "Descripción no disponible";
-                pdfLink.href = productos[nombre]?.pdf || "#";
+                modalDescription.textContent = descripcion;
+                pdfLink.href = pdfUrl;
             });
         });
 
@@ -833,63 +887,33 @@
         });
     });
 
-    document.querySelectorAll('.slider-container').forEach(container => {
-    const list = container.querySelector('.product-list');
-    const products = list.querySelectorAll('.product');
-    const productWidth = products[0].offsetWidth + 25;
-    
-    // Clonar productos correctamente
-    const cloneQty = 3; // Número de productos a clonar
-    const clonesStart = Array.from(products).slice(-cloneQty).map(node => node.cloneNode(true));
-    const clonesEnd = Array.from(products).slice(0, cloneQty).map(node => node.cloneNode(true));
-    
-    list.prepend(...clonesStart);
-    list.append(...clonesEnd);
-    
-    let isAnimating = false;
-    let currentPosition = productWidth * cloneQty;
-    
-    // Inicializar posición
-    list.scrollLeft = currentPosition;
 
-    function scrollSlider(direction) {
-        if(isAnimating) return;
-        isAnimating = true;
+    
+        document.querySelectorAll('.slider-container').forEach(container => {
+            const list = container.querySelector('.product-list');
+            const prevBtn = container.querySelector('.prev');
+            const nextBtn = container.querySelector('.next');
+            const productWidth = 200 + 25; // Ancho del producto (200px) + gap (25px)
         
-        // Animación del botón
-        const button = direction === 1 ? container.querySelector('.next') : container.querySelector('.prev');
-        button.classList.add('clicked');
-        setTimeout(() => button.classList.remove('clicked'), 400);
+            // Desplazamiento manual con botones
+            prevBtn.addEventListener('click', () => {
+                list.scrollBy({ left: -productWidth, behavior: 'smooth' });
+            });
         
-        // Calcular nuevo desplazamiento
-        currentPosition += (productWidth * 3 * direction);
-        list.scrollTo({
-            left: currentPosition,
-            behavior: 'smooth'
+            nextBtn.addEventListener('click', () => {
+                list.scrollBy({ left: productWidth, behavior: 'smooth' });
+            });
+        
+            // Slider automático
+            setInterval(() => {
+                list.scrollBy({ left: productWidth, behavior: 'smooth' });
+                // Si llega al final, vuelve al inicio
+                if (list.scrollLeft + list.clientWidth >= list.scrollWidth) {
+                    list.scrollTo({ left: 0, behavior: 'smooth' });
+                }
+            }, 3000); // Cambia cada 3 segundos
         });
         
-        // Verificar reposicionamiento después de la animación
-        setTimeout(() => {
-            const maxScroll = list.scrollWidth - list.clientWidth;
-            
-            if(currentPosition <= productWidth * cloneQty) {
-                currentPosition = maxScroll - productWidth * cloneQty * 2;
-                list.scrollLeft = currentPosition;
-            }
-            
-            if(currentPosition >= maxScroll - productWidth * cloneQty) {
-                currentPosition = productWidth * cloneQty;
-                list.scrollLeft = currentPosition;
-            }
-            
-            isAnimating = false;
-        }, 500);
-    }
-
-    // Event listeners mejorados
-    container.querySelector('.prev').addEventListener('click', () => scrollSlider(-1));
-    container.querySelector('.next').addEventListener('click', () => scrollSlider(1));
-});
 
     // JavaScript para el progreso de scroll
     const progressRing = document.querySelector('.progress-ring__progress');
