@@ -285,6 +285,32 @@
                 padding: 10px;
             }
         }
+
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: #3b3b6d;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .back-button:hover {
+            background: #5a5a8e;
+            text-decoration: none;
+        }
+        
+        /* Para versión móvil */
+        @media (max-width: 768px) {
+            .back-button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -316,7 +342,7 @@
         </div>
         <div class="sidebar-footer">
             <button onclick="toggleSidebar()">
-                <span class="material-icons">arrow_back</span>
+                <span class="material-icons back-button"><a href="/">arrow_back</a></span>
                 Volver
             </button>
         </div>

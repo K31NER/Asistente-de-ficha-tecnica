@@ -109,9 +109,19 @@ async def get_imagen(file_id: str):
         return Response(content=file.read(), media_type="image/jpeg")
     except:
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
+
+# Endpoint para descargar archivos
+@app.get("/pdf/{file_id}", tags=["Archivos"])
+async def descargar_ficha_tecnica(file_id: str):
+    try:
+        file = fs.get(ObjectId(file_id))
+        response = Response(content=file.read(), media_type="application/pdf")
+        response.headers["Content-Disposition"] = f"attachment; filename={file.filename}"
+        return response
+    except:
+        raise HTTPException(status_code=404, detail="Archivo no encontrado")
     
 if __name__ == "__main__":
     #ejecutaos el servidor directamente con codigo
     uvicorn.run(app, host="127.0.0.1", port=8000)
-    
-    
+
