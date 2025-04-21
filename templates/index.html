@@ -1,28 +1,34 @@
+<!-- FILE: templates/index.html -->
 <!DOCTYPE html>
 <html lang="es">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tecnomack - Productos Tecnológicos</title>
-    <link rel="icon" href="static/img/logo.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link>
-    <style>
-        /* Estilos generales */
-        body {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            color: #ffffff;
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            overflow-x: hidden;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        /* Encabezado */
-        header {
+        <title>Tecnomack - Productos Tecnológicos</title>
+        <link rel="icon" href="{{ url_for('static', path='/img/logo.png') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"> <!-- Importar pesos específicos -->
+
+        <style>
+            /* Estilos generales */
+            body {
+                background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+                color: #ffffff;
+                font-family: 'Roboto', sans-serif;
+                margin: 0;
+                overflow-x: hidden;
+                min-height: 100vh; /* Asegura que el body ocupe al menos la altura de la ventana */
+                display: flex; /* Usar flexbox para empujar el footer hacia abajo */
+                flex-direction: column;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+                flex-grow: 1; /* Permite que el contenedor principal ocupe el espacio restante */
+            }
+            /* Encabezado */
+            header {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -46,19 +52,9 @@
                 margin: 0;
                 letter-spacing: 2px;
                 text-transform: uppercase;
+                font-weight: 700; /* Peso de fuente más grueso para el título */
             }
-            .product-content {
-                position: absolute;
-                bottom: 0;
-                width: 100%;
-                padding: 10px;
-                background: rgba(0,0,0,0.7);
-                transform: translateY(100%);
-                transition: transform 0.3s ease;
-            }
-            .product:hover .product-content {
-                transform: translateY(0);
-            }
+
             nav ul {
                 list-style: none;
                 display: flex;
@@ -72,6 +68,7 @@
                 text-decoration: none;
                 font-size: 1.1em;
                 transition: color 0.3s ease;
+                font-weight: 500; /* Peso de fuente medio para los enlaces */
             }
             nav ul li a:hover {
                 color: #00ffff;
@@ -85,97 +82,153 @@
                 margin-bottom: 30px;
                 text-transform: uppercase;
                 letter-spacing: 1px;
+                font-weight: 700;
             }
-            /* Lista de productos */
 
+            /* Productos */
             .product {
+                flex: 0 0 calc(33.33% - 25px); /* Ajustado para el gap de 25px */
+                max-width: calc(33.33% - 25px);
+                height: 350px;
+                border-radius: 15px;
+                overflow: hidden;
                 position: relative;
-                width: 200px;
-                margin: 10px;
-                cursor: pointer;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                background: rgba(255, 255, 255, 0.05); /* Fondo sutil para la tarjeta */
+                display: flex;
+                flex-direction: column;
+                cursor: pointer; /* Indica que es clickeable */
+            }
+
+            .product:hover {
+                transform: translateY(-8px); /* Elevación */
+                box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2); /* Sombra brillante */
             }
 
             .product-card {
                 position: relative;
-                height: 200px;
+                flex-grow: 1; /* Ocupa el espacio restante */
                 overflow: hidden;
-                border-radius: 10px;
-                transition: transform 0.3s ease;
+                border-radius: 15px 15px 0 0; /* Bordes redondeados solo arriba */
             }
 
             .product-main-image {
-                width: 1000px;
+                width: 100%;
                 height: 100%;
                 object-fit: cover;
-                border-radius: 10px;
+                transition: transform 0.5s ease; /* Animación de zoom en la imagen */
             }
+             .product:hover .product-main-image {
+                transform: scale(1.1);
+            }
+
 
             .product-name {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 10px;
-            margin: 0;
-            background: rgba(0, 0, 0, 0.7);
-            color: #00ffff;
-            text-align: center;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                padding: 15px 10px; /* Más padding */
+                margin: 0;
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0)); /* Gradiente oscuro */
+                color: #00ffff;
+                text-align: center;
+                font-size: 1.2em; /* Tamaño de fuente aumentado */
+                font-weight: 700;
+                z-index: 1; /* Asegura que el nombre esté sobre la imagen */
             }
 
+            /* Estilos para el detalle emergente al pasar el mouse */
             .product-detail-card {
-            position: absolute;
-            top: 0;
-            left: 100%;
-            width: 200px;
-            height: 200px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.95);
-            border-radius: 10px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 2;
+                position: absolute;
+                top: 0;
+                left: 0; /* Cambiado para superponerse */
+                width: 90%;
+                height: 90%;
+                padding: 20px;
+                background: rgba(0, 0, 0, 0.95); /* Fondo oscuro semi-transparente */
+                border-radius: 15px;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.4s ease, visibility 0.4s ease;
+                z-index: 2; /* Asegura que esté sobre la imagen */
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between; /* Distribuye el espacio */
             }
 
             .product:hover .product-detail-card {
-            left: calc(100% + 10px);
-            opacity: 1;
-            visibility: visible;
+                opacity: 1;
+                visibility: visible;
             }
 
             .product-price {
-            color: #ffffff;
-            font-size: 1.4em;
-            margin: 0 0 10px 0;
-            font-weight: bold;
+                color: #ffffff;
+                font-size: 1.5em; /* Tamaño aumentado */
+                margin: 0 0 10px 0;
+                font-weight: bold;
+                text-align: center;
             }
 
             .product-description {
-            color: #ccc;
-            font-size: 0.95em;  /* Tamaño aumentado */
-            line-height: 1.5;
-            margin: 10px 0 15px 0;
-            flex-grow: 1;
-            overflow-y: auto;  /* Scroll si el texto es muy largo */
-            padding-right: 8px; /* Espacio para el scroll */
-            max-height: 120px; /* Altura máxima */
-            display: block; /* Asegurar visibilidad */
+                color: #ccc;
+                font-size: 0.95em;
+                line-height: 1.6; /* Mayor interlineado */
+                margin: 10px 0 15px 0;
+                flex-grow: 1;
+                overflow-y: auto;
+                padding-right: 8px;
+                max-height: 150px; /* Altura máxima ajustada */
+                display: block;
             }
 
-            .product-detail-btn {
-                display: inline-block;
-                padding: 8px 20px;
+            /* Estilo para la barra de scroll de la descripción */
+            .product-description::-webkit-scrollbar {
+                width: 6px;
+            }
+            .product-description::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 3px;
+            }
+
+            .product-actions {
+                display: flex;
+                flex-direction: column; /* Botones apilados */
+                gap: 10px; /* Espacio entre botones */
+                margin-top: 15px;
+            }
+
+
+            .product-detail-btn,
+            .product-chat-btn { /* Clase para el nuevo botón de chat */
+                display: flex; /* Usar flexbox para centrar contenido */
+                align-items: center;
+                justify-content: center;
+                padding: 10px 15px; /* Ajuste de padding */
                 background: #00ffff;
                 color: #0f0c29;
                 text-decoration: none;
-                border-radius: 20px;
+                border-radius: 25px; /* Bordes más redondeados */
                 font-size: 0.9em;
-                transition: transform 0.3s ease;
+                font-weight: bold; /* Texto en negrita */
+                transition: transform 0.3s ease, background 0.3s ease;
+                gap: 8px; /* Espacio entre ícono y texto */
+            }
+
+            .product-chat-btn {
+                 background: #5a5a8e; /* Color diferente para el botón de chat */
+                 color: #ffffff;
             }
 
             .product-detail-btn:hover {
-                transform: translateY(-2px);
+                transform: translateY(-3px); /* Elevación */
+                background: #00cccc; /* Color hover */
             }
+             .product-chat-btn:hover {
+                transform: translateY(-3px);
+                background: #6b6bbd; /* Color hover */
+            }
+
 
             /* Animación de entrada */
             @keyframes fadeInUp {
@@ -207,12 +260,28 @@
                 }
                 .product {
                     width: 150px;
-                    height: 150px; /* Altura ajustada */
+                    height: 250px; /* Altura ajustada para móviles */
                 }
+                 .product-detail-card {
+                     padding: 15px;
+                 }
+                 .product-price {
+                     font-size: 1.3em;
+                 }
+                 .product-description {
+                     font-size: 0.9em;
+                 }
+                 .product-detail-btn, .product-chat-btn {
+                     font-size: 0.8em;
+                     padding: 8px 10px;
+                 }
             }
 
-            .product-modal {
-            display: none;
+
+        /* Estilos para el modal (si decides seguir usándolo en lugar del detalle emergente) */
+        /* Si usas el detalle emergente, puedes eliminar o comentar los estilos del modal */
+        .product-modal {
+            display: none; /* Oculto por defecto */
             position: fixed;
             top: 0;
             left: 0;
@@ -225,7 +294,7 @@
             padding: 20px;
             box-sizing: border-box;
         }
-        
+
         .modal-content {
             background: #1a1a2e;
             border-radius: 15px;
@@ -236,13 +305,14 @@
             padding: 30px;
             position: relative;
             animation: modalFade 0.3s ease;
+            color: #ffffff; /* Asegura que el texto dentro del modal sea blanco */
         }
-        
+
         @keyframes modalFade {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         .modal-close {
             position: absolute;
             top: 15px;
@@ -252,24 +322,24 @@
             color: #00ffff;
             transition: transform 0.3s ease;
         }
-        
+
         .modal-close:hover {
             transform: rotate(90deg);
         }
-        
+
         .modal-image {
             flex: 1;
             max-width: 300px;
             border-radius: 10px;
             overflow: hidden;
         }
-        
+
         .modal-image img {
             width: 100%;
             height: auto;
             display: block;
         }
-        
+
         .modal-info {
             flex: 2;
             display: flex;
@@ -278,7 +348,7 @@
             max-height: 400px;
             overflow-y: auto;
             padding-right: 15px;
-            }
+        }
 
         .modal-info h3 {
             margin: 0 0 15px 0;
@@ -288,6 +358,7 @@
             top: 0;
             background: #1a1a2e;
             padding-bottom: 10px;
+            z-index: 10; /* Asegura que el título pegajoso esté encima */
         }
 
         .modal-info p {
@@ -297,8 +368,29 @@
             color: #ffffffcc;
         }
 
-        
-        .pdf-btn {
+
+        .modal-info::-webkit-scrollbar {
+            width: 8px;
+        }
+        .modal-info::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+        .modal-info::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+
+        .modal-actions { /* Contenedor para botones dentro del modal */
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-pdf-btn,
+        .modal-chat-btn { /* Clases para botones dentro del modal */
             background: #00ffff;
             color: #0f0c29;
             padding: 12px 25px;
@@ -307,21 +399,24 @@
             font-weight: bold;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
             transition: transform 0.3s ease;
             width: fit-content;
-            margin-top: 20px;
-            align-self: flex-start;
+            align-self: flex-start; /* Alinea los botones a la izquierda */
         }
-        
-        .pdf-btn i {
-            font-size: 1.2em;
+
+        .modal-chat-btn {
+             background: #5a5a8e; /* Color diferente para el botón de chat en modal */
+             color: #ffffff;
         }
-        
-        .pdf-btn:hover {
+
+
+        .modal-pdf-btn:hover,
+        .modal-chat-btn:hover {
             transform: translateY(-2px);
         }
-        
+
         @media (max-width: 768px) {
             .modal-content {
                 flex-direction: column;
@@ -333,362 +428,377 @@
             .modal-info h3 {
                 font-size: 1.5em;
             }
+             .modal-pdf-btn, .modal-chat-btn {
+                 width: 100%; /* Botones ocupan todo el ancho en móviles */
+                 justify-content: center;
+             }
         }
-        
-        .product {
+
+
+        .search-btn {
+            background: #00ffff;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f0c29;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .search-btn:active {
+            transform: scale(0.9);
+        }
+
+        .search-btn i {
+            font-size: 1.2em;
+            transition: transform 0.3s ease;
+        }
+
+        /* Animación al hacer clic */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .search-btn.active {
+            animation: pulse 0.4s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .search-bar input {
+                max-width: none;
+                width: 100%;
+            }
+            .search-btn {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        .header-btn {
+            background: #00ffff;
+            color: #0f0c29;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-flex; /* Usar flexbox para alinear ícono y texto */
+            align-items: center;
+            gap: 8px; /* Espacio entre ícono y texto */
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: none;
             cursor: pointer;
         }
 
-        .search-btn {
-        background: #00ffff;
-        border: none;
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #0f0c29;
-    }
-    
-    .search-btn:hover {
-        transform: scale(1.1) rotate(10deg);
-        box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-    }
-    
-    .search-btn:active {
-        transform: scale(0.9);
-    }
-    
-    .search-btn i {
-        font-size: 1.2em;
-        transition: transform 0.3s ease;
-    }
-    
-    /* Animación al hacer clic */
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.2); }
-        100% { transform: scale(1); }
-    }
-    
-    .search-btn.active {
-        animation: pulse 0.4s ease;
-    }
-    
-    /* Responsive */
-    @media (max-width: 600px) {
-        .search-bar input {
-            max-width: none;
-            width: 100%;
+        .header-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
         }
-        .search-btn {
-            width: 40px;
-            height: 40px;
+
+        .header-btn:active {
+            transform: scale(0.95);
         }
-    }
 
-    .header-btn {
-        background: #00ffff;
-        color: #0f0c29;
-        padding: 10px 20px;
-        border-radius: 25px;
-        text-decoration: none;
-        align-items: center;
-        transition: all 0.3s ease;
-        font-weight: 500;
-        border: none;
-        cursor: pointer;
-    }
-    
-    .header-btn:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
-    }
-    
-    .header-btn:active {
-        transform: scale(0.95);
-    }
-    
-    .header-btn i {
-        font-size: 0.9em;
-    }
-    
-    /* Animación unificada */
-    @keyframes buttonPulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-    }
-    
-    .header-btn.clicked {
-        animation: buttonPulse 0.4s ease;
-    }
-    
-    /* Adaptar enlaces del nav como botones */
-    nav ul li a {
-        padding: 8px 15px;
-        border-radius: 20px;
-        transition: all 0.3s ease;
-    }
-    
-    nav ul li a:hover {
-        background: rgba(0, 255, 255, 0.1);
-        box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-    }
-    
-    @media (max-width: 768px) {
-        header {
-            flex-direction: column;
-            gap: 15px;
+        .header-btn i {
+            font-size: 0.9em;
         }
-        .header-btn span {
-            display: none;
+
+        /* Animación unificada */
+        @keyframes buttonPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
-    }
 
-    /* Animaciones suaves */
-    html {
-        scroll-behavior: smooth;
-    }
-    
-    section {
-        opacity: 1;
-        transform: translateY(0);
-        transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-    
-    .section-highlight {
-        animation: sectionFocus 1.2s ease;
-    }
-    
-    @keyframes sectionFocus {
-        0% {
-            transform: translateY(20px);
-            opacity: 0.4;
+        .header-btn.clicked {
+            animation: buttonPulse 0.4s ease;
         }
-        100% {
-            transform: translateY(0);
-            opacity: 1;
+
+        /* Adaptar enlaces del nav como botones */
+        nav ul li a {
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
         }
-    }
 
-    /* Slider Container */
-    .slider-container {
-        position: relative;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 60px;
-    }
-
-    /* Lista de Productos */
-    .product-list {
-        display: flex;
-        gap: 25px;
-        overflow-x: hidden;
-        scroll-behavior: smooth;
-        padding: 20px 0;
-        justify-content: center;
-    }
-
-    /* Botones del Slider */
-    /* Slider Container */
-.slider-container {
-    position: relative;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 60px;
-}
-
-/* Lista de Productos */
-.product-list {
-    display: flex;
-    gap: 25px;
-    overflow-x: hidden; /* Cambiamos de auto a hidden para controlarlo con JS */
-    scroll-behavior: smooth;
-    padding: 20px 0;
-    justify-content: flex-start; /* Alineamos a la izquierda */
-}
-
-/* Botones del Slider */
-.slider-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #00ffff;
-    color: #0f0c29;
-    border: none;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
-    z-index: 2;
-}
-
-.slider-btn:hover {
-    transform: translateY(-50%) scale(1.15);
-    box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
-}
-
-.slider-btn.prev {
-    left: 10px;
-}
-
-.slider-btn.next {
-    right: 10px;
-}
-
-/* Productos */
-.product {
-    flex: 0 0 200px; /* Ancho fijo para cada producto */
-    max-width: 200px;
-    height: 200px; /* Altura fija */
-    border-radius: 15px;
-    overflow: hidden;
-    position: relative;
-    transition: transform 0.3s ease;
-}
-
-.product img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Asegura que las imágenes se ajusten bien */
-    border-radius: 15px;
-}
-    /* Productos */
-    .product {
-        flex: 0 0 calc(33.33% - 20px);
-        max-width: calc(33.33% - 20px);
-        height: 350px;
-        border-radius: 15px;
-        overflow: hidden;
-        position: relative;
-        transition: transform 0.3s ease;
-    }
-
-    .product:hover {
-        transform: translateY(-5px);
-    }
-
-    /* Responsive */
-    @media (max-width: 992px) {
-        .product {
-            flex: 0 0 calc(50% - 15px);
-            max-width: calc(50% - 15px);
-            height: 300px;
+        nav ul li a:hover {
+            background: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
-        
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .header-btn span {
+                display: none; /* Ocultar texto del botón en móviles */
+            }
+        }
+
+        /* Animaciones suaves */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Estilo para la sección activa */
+        .category-section.active {
+            animation: sectionFocus 1.2s ease;
+        }
+
+        @keyframes sectionFocus {
+            0% {
+                transform: translateY(20px);
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Slider Container */
         .slider-container {
-            padding: 0 40px;
+            position: relative;
+            max-width: 100%; /* Asegura que el contenedor no se desborde */
+            margin: 0 auto;
+            padding: 0 60px; /* Espacio para los botones */
+            box-sizing: border-box; /* Incluir padding en el ancho */
         }
-    }
 
-    @media (max-width: 768px) {
-        .product {
-            flex: 0 0 100%;
-            max-width: 100%;
-            height: 250px;
+        /* Lista de Productos */
+        .product-list {
+            display: flex;
+            gap: 25px;
+            overflow-x: hidden; /* Ocultar scrollbar nativo */
+            scroll-behavior: smooth;
+            padding: 20px 0;
+            justify-content: flex-start; /* Alinear productos al inicio */
+            /* Remover scroll-snap-type si el slider es automático */
+            /* scroll-snap-type: x mandatory; */
+            /* scroll-padding: 0 50px; */
         }
-        
+
+
+        /* Botones del Slider */
         .slider-btn {
-            width: 40px;
-            height: 40px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #00ffff;
+            color: #0f0c29;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+            z-index: 2;
+            opacity: 0.8; /* Ligeramente transparente */
         }
-    }
 
-    /* Animación al hacer clic (igual que botones anteriores) */
-    @keyframes buttonPulse {
-        0% { transform: translateY(-50%) scale(1); }
-        50% { transform: translateY(-50%) scale(1.2); }
-        100% { transform: translateY(-50%) scale(1); }
-    }
+        .slider-btn:hover {
+            transform: translateY(-50%) scale(1.15);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+            opacity: 1; /* Opacidad completa al pasar el mouse */
+        }
 
-    .slider-btn.clicked {
-        animation: buttonPulse 0.4s ease;
-    }
+        .slider-btn.prev {
+            left: 10px;
+        }
 
-    .product-list {
-    scroll-snap-type: x mandatory;
-    scroll-padding: 0 50px;
-}
+        .slider-btn.next {
+            right: 10px;
+        }
 
-.product {
-    scroll-snap-align: start;
-}
+        /* Responsive para el Slider */
+        @media (max-width: 992px) {
+            .product {
+                flex: 0 0 calc(50% - 15px); /* 2 productos por fila */
+                max-width: calc(50% - 15px);
+                height: 300px;
+            }
 
-.slider-container:hover .slider-btn {
-    opacity: 1;
-}
+            .slider-container {
+                padding: 0 40px; /* Menos espacio para botones */
+            }
+             .slider-btn {
+                 width: 40px;
+                 height: 40px;
+             }
+        }
 
-/* Efecto de scroll infinito */
-@keyframes slideLoop {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
-}
+        @media (max-width: 768px) {
+            .product {
+                flex: 0 0 100%; /* 1 producto por fila */
+                max-width: 100%;
+                height: 250px;
+            }
 
-.product-list:hover {
-    animation-play-state: paused;
-}
+            .slider-container {
+                padding: 0 10px; /* Eliminar espacio para botones en móviles */
+            }
+             .slider-btn {
+                 display: none; /* Ocultar botones del slider en móviles si no son necesarios */
+             }
+             .product-list {
+                 overflow-x: auto; /* Permitir scroll nativo en móviles */
+                 scroll-snap-type: x mandatory; /* Restaurar snap para scroll nativo */
+                 scroll-padding: 0 10px;
+             }
+              .product {
+                scroll-snap-align: start; /* Restaurar snap para scroll nativo */
+              }
+        }
 
-/* Estilos para la rueda de progreso */
-.progress-container {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 1000;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+        /* Animación al hacer clic (igual que botones anteriores) */
+        @keyframes buttonPulse {
+            0% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.2); }
+            100% { transform: translateY(-50%) scale(1); }
+        }
 
-.progress-ring__progress {
-    transition: stroke-dashoffset 0.3s ease;
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
-}
+        .slider-btn.clicked {
+            animation: buttonPulse 0.4s ease;
+        }
 
-.progress-button {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: #00ffff;
-    border: none;
-    color: #0f0c29;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-    transition: all 0.3s ease;
-}
 
-.progress-button:hover {
-    background: #00ffff;
-    transform: translate(-50%, -50%) scale(1.1);
-    box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
-}
+        /* Estilos para la rueda de progreso */
+        .progress-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.8; /* Ligeramente transparente */
+        }
+         .progress-container:hover {
+             opacity: 1;
+         }
 
-.progress-button i {
-    font-size: 1.2em;
-}
+        .progress-ring__circle {
+             /* Estilo del círculo de fondo */
+        }
 
-@media (max-width: 768px) {
-    .progress-container {
-        bottom: 20px;
-        right: 20px;
-    }
-}
+        .progress-ring__progress {
+            transition: stroke-dashoffset 0.3s ease;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .progress-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #00ffff;
+            border: none;
+            color: #0f0c29;
+            display: none; /* Oculto por defecto */
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .progress-button:hover {
+            background: #00ffff;
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+        }
+
+        .progress-button i {
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .progress-container {
+                bottom: 20px;
+                right: 20px;
+            }
+             .progress-button {
+                 width: 40px;
+                 height: 40px;
+             }
+        }
+
+        /* Estilos del footer */
+        footer {
+            background: rgba(0,0,0,0.2);
+            padding: 40px 0;
+            margin-top: 60px;
+            color: #cccccc; /* Color de texto para el footer */
+            font-size: 0.9em;
+        }
+
+        footer h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        footer a {
+            color: #00ffff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #00cccc;
+            text-decoration: underline;
+        }
+
+        footer i {
+             margin-right: 8px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .footer-content {
+                flex-direction: column;
+                align-items: center;
+            }
+            .footer-section {
+                margin: 10px;
+                text-align: center;
+            }
+        }
+
+
     </style>
+
 </head>
 <body>
     <div class="container">
@@ -699,15 +809,15 @@
                 <h1>Tecnomack</h1>
             </div>
             <div style="display: flex; align-items: center; gap: 20px;">
-                <a href="/chat" class="header-btn"><i class="fa-solid fa-robot"></i> Chatbot</a>
-                <a href="/form" class="header-btn"><i class="fa-solid fa-plus"></i> Agregar Productos</a>
+                <a href="/form" class="header-btn"><i class="fa-solid fa-plus"></i> <span>Agregar Productos</span></a>
             </div>
         </header>
+        <!-- Barra de búsqueda (funcionalidad no implementada en backend) -->
         <div class="search-bar" style="margin: 20px 0;">
             <div style="display: flex; gap: 10px; align-items: center;">
-                <input type="text" placeholder="Buscar productos..." 
+                <input type="text" placeholder="Buscar productos..."
                        id="searchInput"
-                       style="padding: 10px 20px; border-radius: 30px; border: none; flex-grow: 1; max-width: 400px;">
+                       style="padding: 10px 20px; border-radius: 30px; border: none; flex-grow: 1; max-width: 400px; background: rgba(255, 255, 255, 0.1); color: white;">
                 <button class="search-btn" id="searchButton">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
@@ -715,73 +825,85 @@
         </div>
         <!-- Contenido principal -->
         <main>
-        
             {% for categoria, productos in productos_por_categoria.items() %}
-            <section id="{{ categoria }}" class="category-section">
-                <h2>{{ categoria|title }}</h2>
-                <div class="slider-container">
-                    <button class="slider-btn prev"><i class="fa-solid fa-chevron-left"></i></button>
-                    <div class="product-list">
-                        {% for producto in productos %}
-                        <div class="product">
-                            <div class="product-card">
-                                <img src="{{ producto.imagen_url }}" alt="{{ producto.nombre }}" class="product-main-image">
-                                <h3 class="product-name">{{ producto.nombre }}</h3>
+                <section id="{{ categoria | replace(' ', '-') }}" class="category-section"> <!-- Usar ID sin espacios -->
+                    <h2>{{ categoria|title }}</h2>
+                    <div class="slider-container">
+                        <button class="slider-btn prev"><i class="fa-solid fa-chevron-left"></i></button>
+                        <div class="product-list">
+                            {% for producto in productos %}
+                            <div class="product">
+                                <div class="product-card">
+                                    <img src="{{ producto.imagen_url }}" alt="{{ producto.nombre }}" class="product-main-image">
+                                    <h3 class="product-name">{{ producto.nombre }}</h3>
+                                </div>
+                                <div class="product-detail-card">
+                                    <p class="product-price">${{ producto.precio }}</p>
+                                    <p class="product-description">{{ producto.descripcion }}</p>
+                                    <div class="product-actions">
+                                        <a href="{{ producto.ficha_url }}" target="_blank" class="product-detail-btn" download>
+                                            <i class="fa-solid fa-file-pdf"></i> Ficha Técnica
+                                        </a>
+                                        <!-- Nuevo botón para chatear -->
+                                        <a href="/chat?product_id={{ producto._id }}" class="product-chat-btn">
+                                            <i class="fa-solid fa-comment"></i> Chatear
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="product-detail-card">
-                                <p class="product-price">${{ producto.precio }}</p>
-                                <p class="product-description">{{ producto.descripcion }}</p>
-                                <a href="{{ producto.ficha_url }}" target="_blank" class="product-detail-btn" download>
-                                    <i class="fa-solid fa-file-pdf"></i> Ficha Técnica
-                                </a>
-                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
+                        <button class="slider-btn next"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
-                    <button class="slider-btn next"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
-            </section>
-        {% endfor %}
-        
+                </section>
+            {% endfor %}
+
         </main>
     </div>
 
-    <footer style="background: rgba(0,0,0,0.2); padding: 40px 0; margin-top: 60px;">
+    <footer>
         <div class="container">
-          <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 250px; margin: 20px;">
-              <h3>Contacto</h3>
-              <p>Email: info@tecnomack.com<br>Tel: +57 318 4949887</p>
-            </div>
-            <div style="flex: 1; min-width: 250px; margin: 20px;">
-              <h3>Redes Sociales</h3>
-              <a href="#" style="color: #00ffff; text-decoration: none;">
-                <i class="fa-brands fa-instagram"></i>Instagram</a><br>
-              <a href="#" style="color: #00ffff; text-decoration: none;">
-                <i class="fa-brands fa-facebook-f"></i></i>Facebook</a>
-            </div>
-          </div>
-        </div>
-        
-        
-
-        <div class="product-modal" id="productModal">
-            <div class="modal-content">
-                <span class="modal-close">×</span>
-                <div class="modal-image">
-                    <img id="modalImage" src="" alt="Producto">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <p>Email: info@tecnomack.com<br>Tel: +57 318 4949887</p>
                 </div>
-                <div class="modal-info">
-                    <h3 id="modalTitle"></h3>
-                    <p id="modalDescription"></p>
-                    <a id="pdfLink" class="pdf-btn" href="#" target="_blank" download>
-                        <i class="fa-solid fa-file-pdf"></i>
-                        Descargar Ficha Técnica
-                    </a>
+                <div class="footer-section">
+                    <h3>Redes Sociales</h3>
+                    <p>
+                        <a href="#" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a><br>
+                        <a href="#" target="_blank"><i class="fa-brands fa-facebook-f"></i> Facebook</a>
+                    </p>
                 </div>
             </div>
         </div>
     </footer>
+
+    <!-- Modal (Mantener si se prefiere usar modal en lugar del detalle emergente) -->
+    <!-- Si usas el detalle emergente, puedes eliminar o comentar este bloque -->
+    <div class="product-modal" id="productModal">
+        <div class="modal-content">
+            <span class="modal-close">×</span>
+            <div class="modal-image">
+                <img id="modalImage" src="" alt="Producto">
+            </div>
+            <div class="modal-info">
+                <h3 id="modalTitle"></h3>
+                <p id="modalDescription"></p>
+                <div class="modal-actions">
+                    <a id="modalPdfLink" class="modal-pdf-btn" href="#" target="_blank" download>
+                        <i class="fa-solid fa-file-pdf"></i> Descargar Ficha Técnica
+                    </a>
+                     <!-- Botón de chat en el modal -->
+                     <a id="modalChatLink" class="modal-chat-btn" href="#">
+                         <i class="fa-solid fa-comment"></i> Chatear sobre el producto
+                     </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="progress-container">
         <svg class="progress-ring" width="60" height="60">
             <circle class="progress-ring__circle" stroke="#00ffff33" stroke-width="4" fill="transparent" r="24" cx="30" cy="30"/>
@@ -793,31 +915,38 @@
     </div>
     <!-- JavaScript -->
     <script>
-        console.log("TechFlix cargado correctamente");
+        console.log("Tecnomack - Index cargado correctamente");
 
-        // Configuración del modal
+        // --- Lógica del Modal (Si decides usarlo) ---
+        // Si prefieres el detalle emergente al pasar el mouse, puedes eliminar o comentar este bloque JS del modal.
         const modal = document.getElementById('productModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalImage = document.getElementById('modalImage');
         const modalDescription = document.getElementById('modalDescription');
-        const pdfLink = document.getElementById('pdfLink');
+        const modalPdfLink = document.getElementById('modalPdfLink'); // Cambiado a modalPdfLink
+        const modalChatLink = document.getElementById('modalChatLink'); // Nuevo enlace de chat en modal
         const closeModal = document.querySelector('.modal-close');
 
-        // Abrir modal al hacer clic en producto
+        // Abrir modal al hacer clic en producto (usando delegación de eventos)
         document.querySelectorAll('.product').forEach(product => {
             product.addEventListener('click', () => {
-                const precio = product.querySelector('.product-price').textContent;
+                // Obtener datos del detalle emergente (ya que está presente)
+                const detailCard = product.querySelector('.product-detail-card');
+                const nombre = product.querySelector('.product-name').textContent; // Usar el nombre como título
                 const imagen = product.querySelector('.product-main-image').src;
-                const descripcion = product.querySelector('.product-description').textContent;
-                const pdfUrl = product.querySelector('.product-detail-btn').href;
-                
+                const descripcion = detailCard.querySelector('.product-description').textContent;
+                const pdfUrl = detailCard.querySelector('.product-detail-btn').href;
+                const productId = product.querySelector('.product-chat-btn').href.split('product_id=')[1]; // Obtener ID del enlace de chat
+
                 modal.style.display = 'flex';
-                modalTitle.textContent = precio;
+                modalTitle.textContent = nombre; // Mostrar nombre en el título del modal
                 modalImage.src = imagen;
                 modalDescription.textContent = descripcion;
-                pdfLink.href = pdfUrl;
+                modalPdfLink.href = pdfUrl;
+                modalChatLink.href = `/chat?product_id=${productId}`; // Configurar enlace de chat en modal
             });
         });
+
 
         // Cerrar modal
         closeModal.addEventListener('click', () => {
@@ -829,121 +958,176 @@
                 modal.style.display = 'none';
             }
         });
+        // --- Fin Lógica del Modal ---
+
 
         // Animación del botón de búsqueda
-    const searchButton = document.getElementById('searchButton');
-    
-    searchButton.addEventListener('click', () => {
-        // Añadir clase de animación
-        searchButton.classList.add('active');
-        
-        // Eliminar clase después de la animación
-        setTimeout(() => {
-            searchButton.classList.remove('active');
-        }, 400);
-        
-        // Aquí puedes añadir la lógica de búsqueda
-        const searchTerm = document.getElementById('searchInput').value;
-        console.log('Buscando:', searchTerm);
-    });
+        const searchButton = document.getElementById('searchButton');
+        searchButton.addEventListener('click', () => {
+            searchButton.classList.add('active');
+            setTimeout(() => {
+                searchButton.classList.remove('active');
+            }, 400);
 
-
-     // Navegación suave mejorada
-    document.querySelectorAll('nav a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            
-            // Remover highlight anterior
-            document.querySelectorAll('section').forEach(section => {
-                section.classList.remove('section-highlight');
-            });
-            
-            // Añadir animación a la sección objetivo
-            targetSection.classList.add('section-highlight');
-            
-            // Scroll suave con offset para el header
-            const yOffset = -80; // Ajusta según el tamaño de tu header
-            const y = targetSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            
-            window.scrollTo({
-                top: y,
-                behavior: 'smooth'
-            });
-            
-            // Actualizar historia
-            window.history.pushState(null, null, targetId);
+            const searchTerm = document.getElementById('searchInput').value;
+            console.log('Buscando:', searchTerm);
+            // Implementar lógica de búsqueda en el frontend o backend aquí
         });
-    });
 
-    // Detectar scroll para resaltar secciones
-    window.addEventListener('scroll', () => {
-        document.querySelectorAll('section').forEach(section => {
-            const rect = section.getBoundingClientRect();
-            if(rect.top <= 100 && rect.bottom >= 100) {
-                section.classList.add('section-highlight');
-            }
+
+        // Navegación suave mejorada
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Solo manejar enlaces internos que empiezan con #
+                if (this.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+
+                    if (targetSection) {
+                        // Remover highlight anterior
+                        document.querySelectorAll('.category-section').forEach(section => {
+                            section.classList.remove('active');
+                        });
+
+                        // Añadir animación a la sección objetivo
+                        targetSection.classList.add('active');
+
+                        // Scroll suave con offset para el header
+                        const yOffset = -80; // Ajusta según el tamaño de tu header
+                        const y = targetSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+                        window.scrollTo({
+                            top: y,
+                            behavior: 'smooth'
+                        });
+
+                        // Actualizar historia
+                        window.history.pushState(null, null, targetId);
+                    }
+                }
+                 // Los enlaces a /form y /chat se dejan como navegación normal
+            });
         });
-    });
 
+        // Detectar scroll para resaltar secciones
+        const sections = document.querySelectorAll('.category-section');
+        const highlightSection = () => {
+             sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                const offset = 150; // Ajusta este valor según sea necesario
 
-    
+                // Si la sección está visible en una cierta parte de la ventana
+                if (rect.top <= window.innerHeight - offset && rect.bottom >= offset) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', highlightSection);
+        highlightSection(); // Ejecutar al cargar la página
+
+        // Slider automático y manual
         document.querySelectorAll('.slider-container').forEach(container => {
             const list = container.querySelector('.product-list');
             const prevBtn = container.querySelector('.prev');
             const nextBtn = container.querySelector('.next');
-            const productWidth = 200 + 25; // Ancho del producto (200px) + gap (25px)
-        
+
+            let intervalId;
+            const slideInterval = 4000; // Cambia cada 4 segundos
+
+            const startSlider = () => {
+                 intervalId = setInterval(() => {
+                    const scrollLeft = list.scrollLeft;
+                    const maxScrollLeft = list.scrollWidth - list.clientWidth;
+
+                    if (scrollLeft >= maxScrollLeft) {
+                        // Si está al final, vuelve al inicio sin animación
+                         list.scrollTo({ left: 0, behavior: 'auto' });
+                         // Luego, desplaza un poco para reiniciar la animación suave
+                         setTimeout(() => {
+                              list.scrollBy({ left: list.clientWidth / 3, behavior: 'smooth' }); // Desplaza 1/3 del ancho visible
+                         }, 50); // Pequeño retraso
+                    } else {
+                        // Desplaza 1/3 del ancho visible
+                        list.scrollBy({ left: list.clientWidth / 3, behavior: 'smooth' });
+                    }
+                }, slideInterval);
+            };
+
+            const stopSlider = () => {
+                clearInterval(intervalId);
+            };
+
             // Desplazamiento manual con botones
             prevBtn.addEventListener('click', () => {
-                list.scrollBy({ left: -productWidth, behavior: 'smooth' });
+                stopSlider(); // Detiene el slider automático temporalmente
+                list.scrollBy({ left: -list.clientWidth / 2, behavior: 'smooth' }); // Desplaza 1/2 del ancho visible
+                startSlider(); // Reinicia el slider automático
             });
-        
+
             nextBtn.addEventListener('click', () => {
-                list.scrollBy({ left: productWidth, behavior: 'smooth' });
+                stopSlider(); // Detiene el slider automático temporalmente
+                 list.scrollBy({ left: list.clientWidth / 2, behavior: 'smooth' }); // Desplaza 1/2 del ancho visible
+                startSlider(); // Reinicia el slider automático
             });
-        
-            // Slider automático
-            setInterval(() => {
-                list.scrollBy({ left: productWidth, behavior: 'smooth' });
-                // Si llega al final, vuelve al inicio
-                if (list.scrollLeft + list.clientWidth >= list.scrollWidth) {
-                    list.scrollTo({ left: 0, behavior: 'smooth' });
-                }
-            }, 3000); // Cambia cada 3 segundos
+
+            // Detener/Reiniciar al pasar el mouse
+            container.addEventListener('mouseenter', stopSlider);
+            container.addEventListener('mouseleave', startSlider);
+
+            // Iniciar el slider automático al cargar
+            startSlider();
+
+            // Ajustar scroll al redimensionar (opcional)
+            window.addEventListener('resize', () => {
+                stopSlider();
+                startSlider();
+            });
         });
-        
 
-    // JavaScript para el progreso de scroll
-    const progressRing = document.querySelector('.progress-ring__progress');
-    const radius = progressRing.r.baseVal.value;
-    const circumference = 2 * Math.PI * radius;
-    const progressButton = document.querySelector('.progress-button');
 
-    progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
-    progressRing.style.strokeDashoffset = circumference;
+        // JavaScript para el progreso de scroll
+        const progressRing = document.querySelector('.progress-ring__progress');
+        const radius = progressRing.r.baseVal.value;
+        const circumference = 2 * Math.PI * radius;
+        const progressButton = document.querySelector('.progress-button');
 
-    function updateProgress() {
-        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPercent = (window.scrollY / scrollHeight);
-        const offset = circumference - (scrollPercent * circumference);
-    
-        progressRing.style.strokeDashoffset = offset;
-    
-        if (scrollPercent >= 0.95) {
-            progressButton.style.display = 'flex';
-            progressRing.style.display = 'none';
-        } else {
-            progressButton.style.display = 'none';
-            progressRing.style.display = 'block';
+        progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
+        progressRing.style.strokeDashoffset = circumference;
+
+        function updateProgress() {
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            // Evitar división por cero si la página no tiene scroll
+            const scrollPercent = scrollHeight > 0 ? (window.scrollY / scrollHeight) : 0;
+            const offset = circumference - (scrollPercent * circumference);
+
+            progressRing.style.strokeDashoffset = offset;
+
+            // Mostrar botón de ir arriba solo si hay scroll significativo
+            if (window.scrollY > 100) { // Muestra el botón si se ha scrolleado más de 100px
+                progressButton.style.display = 'flex';
+                 progressRing.style.display = 'block';
+            } else {
+                progressButton.style.display = 'none';
+                 progressRing.style.display = 'none'; // Oculta también la rueda si no hay scroll
+            }
+
+            // Ocultar la rueda y mostrar solo el botón cuando se está cerca del final
+            if (scrollPercent > 0.95 && scrollHeight > 0) {
+                 progressRing.style.display = 'none';
+                 progressButton.style.display = 'flex'; // Asegurarse de que el botón esté visible
+            } else if (window.scrollY > 100) {
+                 // Si hay scroll pero no cerca del final, mostrar rueda (y botón ya está flex)
+                 progressRing.style.display = 'block';
+            }
         }
-    }
 
-    window.addEventListener('scroll', updateProgress);
-    updateProgress(); // Inicializar al cargar
+        window.addEventListener('scroll', updateProgress);
+        updateProgress(); // Inicializar al cargar
 
-    
-</script>
+    </script>
 </body>
 </html>
